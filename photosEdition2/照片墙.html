@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body{
+				margin: 0;
+				background: honeydew;
+				overflow: hidden;
+			}
+			ul{
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			#pic_box{
+				width: 1000px;
+				height: 600px;
+				margin: 0 auto;
+				position: relative;
+			}
+			.pic{
+				width: 612px;
+				height: 612px;
+				position: absolute;
+				top: 0;
+				left: 50%;
+				margin-left: -300px;
+				display: none;
+				z-index: 999;
+				opacity: 0;
+			}
+			.pic ul:after{
+				content: '';
+				display: block;
+				clear: both;
+			}
+			.pic li{
+				float: left;
+				margin-left: 2px;
+				margin-top: 2px;
+				width: 100px;
+				height: 100px;
+				background-image: url(../img/1.jpg);
+				background-repeat: no-repeat;
+			}
+			.pic .close{
+				display: block;
+				width: 60px;
+				height: 60px;
+				background: #fff;
+				position: absolute;
+				top: 0px;
+				right: -61px;
+				background: url(img/1.gif) no-repeat center center;
+				
+			}
+			.box{
+				width: 100%;
+				height: 100%;
+			}
+			.list_pic{
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			
+			.list_pic li{
+				float: left;
+				width: 96px;
+				height: 96px;
+				padding: 2px;
+			}
+			.list_pic li img{
+				width: 96px;
+				height: 96px;
+				
+				border-radius: 50px;
+				transition: 1s
+			}
+			.list_pic li:hover img{
+				transform: rotateY(360deg);
+			}
+			#line{
+				width: 100%;
+				height: 1px;
+				background: -webkit-linear-gradient(left,#7ecdf4,#8cca94,#fff45c);
+			}
+			#btn_nav{
+				width: 1000px;
+				height: 30px;
+				margin: 0 auto;
+				position: relative;
+			}
+			#btn_nav button{
+				position: absolute;
+				top: 2px;
+				width: 100px;
+				border: 1px solid #8CCA94;
+				background: -webkit-linear-gradient(#7ecdf4,#fff45c);
+				color: #fff;
+				font:16px/28px "微软雅黑";
+			}
+			#btn_nav button:nth-of-type(1){
+				left: 50%;
+				margin-left: -50px;
+				border-radius:15px 0 0 15px ;
+			}
+			#btn_nav button:nth-of-type(2){
+				left: 50%;
+				margin-left: 49px;
+				border-radius:0 15px 15px 0;
+			}
+			.navs{
+				display: block;
+				width: 100px;
+				height: 100px;
+				position: absolute;
+				border-radius: 30px;
+			}
+			.prev{
+				top: 50%;
+				left:-100px;
+				margin-top: -50px;
+				background: url(img/prev.gif) no-repeat #ccc center center;
+			}
+			.next{
+				left:1366px;
+				top: 50%;
+				margin-top: -50px;
+				background: url(img/next.gif)no-repeat #ccc center center;
+			}
+		</style>
+	</head>
+	<body>
+		<a href="javascript:;" class="prev navs"></a>
+		<a href="javascript:;" class="next navs"></a>
+		<section id="pic_box">
+			<div class="box">
+				<ul class="list_pic">
+					
+				</ul>
+			</div>
+			<div class="pic">
+				<ul>
+				
+				</ul>
+				<a href="javascript:;" class="close"></a>
+			</div>
+		</section>
+		<div id="line"></div>
+		<nav id="btn_nav">
+			<button>球形排列</button>
+			<button>随机排列</button>
+		</nav>
+	</body>
+		<script src="js/arrImg.js"></script>
+		<script src="js/完整版miaov.js"></script>
+		<script >
+			var list_pic= document.querySelector('.list_pic');
+			var pic= document.querySelector('.pic'),
+				ul=pic.querySelector('ul'),
+			    close= pic.querySelector('.close');
+			var btn= document.getElementById('btn_nav');
+			var btn2=btn.children[1];
+			var prev= document.querySelector('.prev'),
+				next= document.querySelector('.next');
+			var lis= list_pic.children;
+			var zIndex=2;
+			var arr_position=[];
+			/*+++++++++++pic下生产6*6个li++++++++++++++*/
+			for(var i=0;i<36;i++){
+				var li = document.createElement('li');
+				ul.appendChild(li);
+			}
+			var li_pic = ul.querySelectorAll('li');
+			for(var i=0;i<arrImg.length;i++){
+				var li=document.createElement('li'),
+					img=document.createElement('img');
+				img.src=arrImg[i];
+				li.appendChild(img);
+				li.index=i;//给每个li 加一个自定义属性 
+				li.ondblclick= function(){
+					pic.style.opacity=0;
+					pic.style.display='block';
+					for(var j=0;j<li_pic.length;j++){
+						li_pic[j].nub=this.index;
+						li_pic[j].style.backgroundImage= 'url('+ this.children[0].src+')';
+						li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+						li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+					}
+					//问题： 想让li_pic 出现后 取消他们的margin值  但是没有实现
+					mTween(this,{rotateX:'360'},400,'linear',function(){
+						mTween(pic,{opacity: 100},1000,'linear',function(){
+							for(var j=0;j<li_pic.length;j++){
+								/*mTween(li_pic[j],{margin:0},400,'linear');*/
+								/*li_pic[j].style.margin=0;*/
+							}
+						});
+					});
+					mTween(prev,{left:0},400,'linear');
+					mTween(next,{left:1266},400,'linear');
+					
+				}
+				list_pic.appendChild(li);
+			}
+			close.onclick= function(){
+				mTween(pic,{opacity: 0},1000,'linear',function(){
+					pic.style.display='none';
+				});
+				mTween(prev,{left:-100},400,'linear');
+				mTween(next,{left:1366},400,'linear');
+			};
+			for(var i=0;i<lis.length;i++){
+				lis[i].style.left= lis[i].offsetLeft+'px';
+				lis[i].style.top= lis[i].offsetTop+'px';
+			}
+			var numb=0
+			for(var i=0;i<lis.length;i++){
+				lis[i].style.position='absolute';
+				fn(lis[i]);
+				next.onclick= function(){
+					pic.style.opacity='0';
+					mTween(pic,{opacity:100},800,'linear');
+					for(var j=0;j<li_pic.length;j++){
+						li_pic[j].style.backgroundImage= 'url('+ lis[li_pic[j].nub+1+numb].children[0].src+')';
+						li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+						li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+					}
+					numb++;
+					
+				}
+				prev.onclick= function(){
+					pic.style.opacity='0';
+					mTween(pic,{opacity:100},800,'linear');
+					for(var j=0;j<li_pic.length;j++){
+						li_pic[j].style.backgroundImage= 'url('+ lis[li_pic[j].nub-1+numb].children[0].src+')';
+						li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+						li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+					}
+					numb--;
+					
+				}
+				
+			}
+			
+			/*+++++++++++++li添加移动事件 ++++++++++++*/
+			function fn(obj){
+				obj.addEventListener('mousedown', fnDown);
+				function fnDown(ev){
+					zIndex++;
+					obj.style.zIndex=zIndex;
+					var disX= ev.pageX - obj.offsetLeft,
+						disY= ev.pageY - obj.offsetTop;
+					document.addEventListener('mousemove',fnMove);
+					function fnMove(ev){
+						var l= ev.pageX - disX,
+							t= ev.pageY - disY;
+//设置边界  没有成功
+						if(l<-183){
+							l=-183;
+						}else if(l>document.documentElement.clientWidth-li.clientWidth){
+							l= document.documentElement.clientWidth-li.clientWidth;
+						}
+						if(t<0){
+							t=0;
+						}else if(t>document.documentElement.clientHeight-li.clientHeight){
+							t=document.documentElement.clientHeight-li.clientHeight;
+						}
+						obj.style.left= l+'px';
+						obj.style.top= t+'px';
+					}
+					document.addEventListener('mouseup',fnUp);
+					function fnUp(){
+
+						document.removeEventListener('mousemove',fnMove);
+						document.removeEventListener('mouseup',fnUp);
+					}
+					ev.preventDefault();
+				}
+			}	
+			for(var i=0;i<lis.length;i++){
+				arr_position.push([lis[i].style.left,lis[i].style.top]);
+			}
+			//随机排列 
+			btn2.onclick=randomPic;
+			function randomPic(){
+				if(pic.style.display=='block'){
+					mTween(pic,{opacity: 0},1000,'linear',function(){
+						pic.style.display='none';
+					});
+					mTween(prev,{left:-100},400,'linear');
+					mTween(next,{left:1366},400,'linear');
+					setTimeout(ran,800)
+				}else{
+					ran();
+				}
+				function ran(){
+					arr_position.sort(function(){//此函数将数组arr中每一项进行随机排序
+						return 0.5-Math.random();
+					});
+					for(var i=0;i<lis.length;i++){
+						lis[i].style.top=arr_position[i][1];
+						lis[i].style.left=arr_position[i][0];
+					}
+				}
+			}
+		</script>
+</html>
