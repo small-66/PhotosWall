@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+<link rel="stylesheet" type="text/css" href="css/reset.css"/>
+<link rel="stylesheet" type="text/css" href="css/index.css"/>
+<link rel="stylesheet" type="text/css" href="css/btns.css"/>
+<!--<link rel="stylesheet" type="text/css" href="css/star.css"/>-->
+</head>
+<body>
+	<div id="pic_wrap">
+		<ul class="pic_ball">	
+		</ul>
+	</div>	
+	<!--以上用来存储图片坐标-->
+	<div class="btns">
+		<div class="btn_text">展开</div>
+		<div class="dots"></div>
+		<div class="dots2"></div>
+		<div class="dots3"></div>
+		<div class="clear" onselectstart="return false">stop</div>
+	</div>
+	<!--以下用来做图片内容-->
+	<ul class="ball_list">		
+	</ul>
+	<section id='pic_sd'>
+		<div class="box_sd">
+			<ul class="list_sd"></ul>
+		</div>
+	</section>
+	<!--<div id='stars'></div>
+	<div id='stars2'></div>
+	<div id='stars3'></div>-->
+</body>
+<script src="../img/miaov.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/arrImg.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	/*--------------------存储初始图片的坐标--------------------------------------------*/
+	var pic_wrap = document.getElementById("pic_wrap"),
+		pic_ball= pic_wrap.children[0];
+	for(var i=0;i<arrImg.length;i++){
+		var li= document.createElement('li');
+		pic_ball.appendChild(li);
+	}
+	var lis_pics= pic_ball.children;
+	var arrPosi=[];
+	for(var i=0;i<lis_pics.length;i++){
+		lis_pics[i].style.left=lis_pics[i].offsetLeft+'px';
+		lis_pics[i].style.top=lis_pics[i].offsetTop+'px';
+	}
+	for(var i=0;i<lis_pics.length;i++){
+		lis_pics[i].style.position='absolute';
+		arrPosi.push([lis_pics[i].offsetLeft+60,lis_pics[i].offsetTop+60]);
+	}
+	/*-------------------------------------------------------------------------------*/
+	/*
+		btns为点击按钮 点击后  ball_lis 每个 运动到指定li的初始位置
+	*/
+	var btns= document.querySelector('.btns'),
+		ball_list= document.querySelector('.ball_list');
+	//ball_list 页面加载后4s显示
+	window.onload=function(){
+		setTimeout(function(){
+			ball_list.style.display='block';
+		},2000);
+		/*----------鼠标移入  放大li --------*/
+		/*var sIndex=0
+		for(var i=0;i<ball_lis.length;i++){
+			ball_lis[i].onmouseover=function(){
+				this.style.zIndex=sIndex++;
+				this.style.transform='scale(2.5)';
+			}
+			ball_lis[i].onmouseout=function(){
+				this.style.transform='scale(1)';
+			}
+		}*/
+		
+		
+	}
+	//按钮 
+	var btn_text = btns.querySelector('.btn_text'),
+		btn_clear=btns.querySelector('.clear');
+	
+	for(var i=0;i<arrImg.length;i++){
+		var li= document.createElement('li');
+		ball_list.appendChild(li);
+	}
+	var ball_lis=ball_list.children;
+	var len=ball_lis.length
+/*	btns.innerHTML=len;*/
+	var R=65;//大小球半径和
+	var BtnsL=100;//btns的 left值
+	var BtnsT=400;//btns的 top值
+	var arrDeg=[];
+	/*----------------设置 每个ball_lis 的开始的位置 -----------------------*/
+	for(var i=1;i<31;i++){
+		var deg = Math.PI* 2*i/30-0.12;
+		var x=R*Math.cos(deg);
+		var y=R*Math.sin(deg);
+		arrDeg.push([x,y]);
+	}
+	for(var i=0;i<ball_lis.length;i++){
+		ball_lis[i].style.left=arrDeg[i%30][0]+BtnsL+'px';
+		ball_lis[i].style.top=BtnsT+ arrDeg[i%30][1]+'px';	
+	}
+	for(var i=0;i<ball_lis.length;i++){
+		ball_lis[i].index=i;
+		createImg(ball_lis[i]);
+	}
+	//创建li里面的img
+	function createImg(obj){
+		var img= document.createElement('img');
+		img.src=arrImg[obj.index];
+		obj.appendChild(img);
+	}
+	var num=0;
+	//点击btns  小球运动到指定位置
+	
+	btns.onclick=run;
+	function run(){
+		btns.onclick=null;
+		setTimeout(function(){
+			if(num!=ball_lis.length){
+				be(ball_lis[num], num);
+				run();
+				len--;
+			}
+			num++;
+			btn_text.innerHTML=len;
+			if(btn_text.innerHTML=='0'){
+				btn_text.innerHTML='3D';
+				btns.onclick=to3d;
+			}
+		
+		},100)
+	}
+	function be(obj, num){
+		mTween(obj,{left:arrPosi[num][0],top:arrPosi[num][1]},400,'linear',function(){
+				obj.style.borderRadius='50px';
+				mTween(obj,{width:120,height:120,left:arrPosi[num][0]-45,top:arrPosi[num][1]-45},800,'bounceOut'	,function(){
+					mTween(obj,{borderWidth:0},400,'linear');
+				});
+			});
+	}
+	
+	/*----------------3D--------------------------*/
+	var pic_3d= document.getElementById('pic_sd'),
+		box_3d= pic_3d.querySelector('div'),
+		list_3d= pic_3d.querySelector('ul');
+	var arrP=[1,3,5,7,9,11,9,7,5,3,1];
+	var n=0;
+	var theta=Math.PI/(arrP.length-1);
+	var phi=0;
+	var r=500;
+	function to3d(){
+		btns.onclick=null;
+		btn_text.innerHTML='';
+		btn_clear.style.display='block';
+		ball_list.style.display='none';
+		pic_3d.style.display='block';
+		for(var i=0;i<arrP.length;i++){
+			phi=Math.PI*2 /arrP[i];
+			for(var j=0;j<arrP[i];j++){
+				var li=document.createElement('li'),
+					img=document.createElement("img");
+				img.src=arrImg[n];
+				li.appendChild(img);
+				drawCircle(li,theta,phi,i,j);
+				list_3d.appendChild(li);
+				n++;
+				if(n==arrP.length-1){
+					n=0;
+				}
+			}
+			function drawCircle(obj,theta,phi,i,j){
+				obj.circleX= r * Math.sin(theta*i)*Math.sin(phi*j)+200,
+				obj.circleY= -r * Math.cos(theta*i)+200,
+				obj.circleZ= r * Math.sin(theta*i)*Math.cos(phi*j);
+				obj.circlePhi= phi*j ;
+				obj.circleTheta= theta*(arrP.length-i)-Math.PI/2;
+			}
+		}
+		var liss= list_3d.children;
+		for(var i=0;i<liss.length;i++){
+			liss[i].nubs=i;
+			liss[i].style.transform='translate3D('+liss[i].circleX+'px,'
+							+liss[i].circleY+'px,'+liss[i].circleZ+'px) rotateY('
+							+liss[i].circlePhi+'rad) rotateX('+liss[i].circleTheta+'rad)';
+		}
+		var angleX=0;
+		var timer=0;
+		timer=setInterval(function(){
+			angleX++;
+			box_3d.style.transform='rotateY('+angleX+'deg)'
+		},60);
+		btn_clear.onclick= function(){
+			clearInterval(timer);
+			btn_clear.innerHTML='双击';
+			btn_clear.ondblclick=function(){
+				timer=setInterval(function(){
+					angleX++;
+					box_3d.style.transform='rotateY('+angleX+'deg)'
+				},60);
+				btn_clear.innerHTML='stop';
+			}
+		}
+		return false;
+	}
+	
+		
+		
+</script>
+
+</html>
