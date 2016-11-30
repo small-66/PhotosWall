@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style type="text/css">
+		body{
+			margin: 0;
+		}
+		ul{
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		#pic_wrap{
+			width: 600px;
+			height: 600px;
+			margin: 0 auto;
+		}
+		.pic_ball{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		.pic_ball li{
+			width: 100px;
+			height: 100px;
+			float: left;
+			text-align: center;
+			line-height: 100px;
+			border-radius: 50px;
+			background: red;
+			opacity: 0;
+			margin: 10px;
+		}
+		.btns{
+			width: 300px;
+			height: 300px;
+			position: absolute;
+			left: -150px;
+			top: 493px;
+			border-radius:150px ;
+			background: red;
+		} 
+		.ball_list li{
+			position: absolute;
+			width: 0;
+			height: 0;
+			left: 0;
+			top: 0;
+			margin-left: -15px;
+			margin-top: -15px;
+			border:15px solid #7ECDF4;
+			text-align: center;
+			border-radius: 15px;
+			opacity: 1;
+			overflow: hidden;
+			box-sizing: border-box;
+			box-shadow: 0 0 10px rgba(0,0,0,0.5);
+		}
+		.ball_list li img{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<div id="pic_wrap">
+		<ul class="pic_ball">
+			<li>1</li>
+			<li>2</li>
+			<li>3</li>
+			<li>4</li>
+			<li>5</li>
+			<li>6</li>
+			<li>7</li>
+			<li>8</li>
+			<li>9</li>
+			<li>10</li>
+			<li>11</li>
+			<li>12</li>
+			<li>13</li>
+			<li>14</li>
+			<li>15</li>
+			<li>16</li>
+			<li>17</li>
+			<li>18</li>
+			<li>19</li>
+			<li>20</li>
+			<li>21</li>
+			<li>22</li>
+			<li>23</li>
+			<li>24</li>
+			<li>25</li>
+			<li>26</li>
+			<li>27</li>
+			<li>28</li>
+			<li>29</li>
+			<li>30</li>
+			<li>31</li>
+			<li>32</li>
+			<li>33</li>
+			<li>34</li>
+			<li>35</li>
+			<li>36</li>
+		</ul>
+	</div>	
+	<div class="btns"></div>
+	<ul class="ball_list">
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>
+		<li></li>		
+	</ul>
+	
+</body>
+<script src="../img/miaov.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/arrImg.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	var btns= document.querySelector('.btns'),
+		ball_list= document.querySelector('.ball_list');
+	var ball_lis=ball_list.children;
+	var pic_ball= document.querySelector('.pic_ball');
+	var liss=pic_ball.children;
+	var R=115;
+	var arrDeg=[];
+	for(var i=1;i<7;i++){
+		var deg = Math.PI* i/12-0.12;
+		var x=R*Math.cos(deg);
+		var y=R*Math.sin(deg);
+		arrDeg.push([x,y]);
+	}
+	for(var i=0;i<ball_lis.length;i++){
+		ball_lis[i].style.left=arrDeg[i%6][0]+'px';
+		ball_lis[i].style.top=document.documentElement.clientHeight- arrDeg[i%6][1]+'px';	
+	}
+	for(var i=0;i<ball_lis.length;i++){
+		ball_lis[i].index=i;
+		createImg(ball_lis[i]);
+	}
+	//创建li里面的img
+	function createImg(obj){
+		var img= document.createElement('img');
+		img.src=arrImg[obj.index];
+		obj.appendChild(img);
+	}
+	
+	var pic_wrap = document.getElementById("pic_wrap"),
+		pic_ball= pic_wrap.children[0];
+	var lis_pics= pic_ball.children;
+	var arrPosi=[];
+	for(var i=0;i<lis_pics.length;i++){
+		lis_pics[i].style.left=lis_pics[i].offsetLeft+'px';
+		lis_pics[i].style.top=lis_pics[i].offsetTop+'px';
+	}
+	for(var i=0;i<lis_pics.length;i++){
+		lis_pics[i].style.position='absolute';
+		arrPosi.push([lis_pics[i].offsetLeft+50,lis_pics[i].offsetTop+50]);
+	}
+	var num=0;
+	//点击btns  小球运动到指定位置
+	btns.onclick=run;
+	function run(){
+		setTimeout(function(){
+			if(num!=ball_lis.length){
+				be(ball_lis[num], num);
+				run()
+			}
+			num++;
+		},100)
+	}
+
+	function be(obj, num){
+		mTween(obj,{left:arrPosi[num][0],top:arrPosi[num][1]},400,'linear',function(){
+				obj.style.borderRadius='50px';
+				mTween(obj,{width:100,height:100,left:arrPosi[num][0]-35,top:arrPosi[num][1]-35},800,'bounceOut'	,function(){
+					mTween(obj,{borderWidth:0},400,'linear');
+				});
+			});
+	}
+</script>
+</html>
