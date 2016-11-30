@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style type="text/css">
+		body{
+			margin: 0;
+			background: honeydew;
+			overflow: hidden;
+		}
+		ul{
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+		#pic_box{
+			width: 1000px;
+			height: 600px;
+			margin: 0 auto;
+			position: relative;
+		}
+		.pic{
+			width: 612px;
+			height: 612px;
+			position: absolute;
+			top: 0;
+			left: 50%;
+			margin-left: -300px;
+			display: none;
+			z-index: 999;
+			opacity: 0;
+		}
+		.pic ul:after{
+			content: '';
+			display: block;
+			clear: both;
+		}
+		.pic li{
+			float: left;
+			margin-left: 2px;
+			margin-top: 2px;
+			width: 100px;
+			height: 100px;
+			background-image: url(../img/1.jpg);
+			background-repeat: no-repeat;
+			
+		}
+		.pic .close{
+			display: block;
+			width: 60px;
+			height: 60px;
+			background: #fff;
+			position: absolute;
+			top: 0px;
+			right: -61px;
+			background: url(img/1.gif) no-repeat center center;
+			
+		}
+		.box{
+			width: 100%;
+			height: 100%;
+		}
+		.list_pic{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		
+		.list_pic li{
+			float: left;
+			width: 96px;
+			height: 96px;
+			padding: 2px;
+			background: #fff;
+			
+		}
+		.list_pic li img{
+			width: 96px;
+			height: 96px;
+		}
+		.list_pic li:hover img{
+			transform: rotateY(360deg);
+		}
+		#line{
+			width: 100%;
+			height: 1px;
+			background: -webkit-linear-gradient(left,#7ecdf4,#8cca94,#fff45c);
+		}
+		#btn_nav{
+			width: 1000px;
+			height: 30px;
+			margin: 0 auto;
+			position: relative;
+		}
+		#btn_nav button{
+			position: absolute;
+			top: 2px;
+			width: 100px;
+			border: 1px solid #8CCA94;
+			background: -webkit-linear-gradient(#7ecdf4,#fff45c);
+			color: #fff;
+			font:16px/28px "微软雅黑";
+		}
+		#btn_nav button:nth-of-type(1){
+			left: 50%;
+			margin-left: -50px;
+			border-radius:15px 0 0 15px ;
+		}
+		#btn_nav button:nth-of-type(2){
+			left: 50%;
+			margin-left: 49px;
+			border-radius:0 15px 15px 0;
+		}
+		.navs{
+			display: block;
+			width: 100px;
+			height: 100px;
+			position: absolute;
+			border-radius: 30px;
+		}
+		.prev{
+			top: 50%;
+			left:-100px;
+			margin-top: -50px;
+			background: url(img/prev.gif) no-repeat #ccc center center;
+		}
+		.next{
+			left:1366px;
+			top: 50%;
+			margin-top: -50px;
+			background: url(img/next.gif)no-repeat #ccc center center;
+		}
+		#pic_ball{
+			display: none;
+			width: 600px;
+			height: 600px;
+			margin: 0 auto;
+			transform-style: preserve-3d;
+			perspective: 10000px;
+			transform: scale(0.5);
+			position: absolute;
+			top: 0;
+			left: 300px;
+		}
+		.box_ball{
+			width: 100%;
+			height: 100%;
+			transform-style: preserve-3d;
+		}
+		.list_ball{
+			width: 100%;
+			height: 100%;
+			position: relative;
+		}
+		.list_ball li{
+			position: absolute;
+			width: 100px;
+			height: 100px;
+		}
+		.list_ball li img{
+			width: 100px;
+			height: 100px;
+		}
+	</style>
+</head>
+<body>
+	<a href="javascript:;" class="prev navs"></a>
+	<a href="javascript:;" class="next navs"></a>
+	<section id="pic_box">
+		<div class="box">
+			<ul class="list_pic">
+				
+			</ul>
+		</div>
+		<div class="pic">
+			<ul>
+			
+			</ul>
+			<a href="javascript:;" class="close"></a>
+		</div>
+	</section>
+	<section id='pic_ball'>
+		<div class="box_ball">
+			<ul class="list_ball"></ul>
+		</div>
+	</section>
+	<div id="line"></div>
+	<nav id="btn_nav">
+		<button>球形排列</button>
+		<button>随机排列</button>
+	</nav>
+</body>
+	<script src="js/arrImg.js"></script>
+	<script src="js/完整版miaov.js"></script>
+	<script >
+		var list_pic= document.querySelector('.list_pic');
+		var pic= document.querySelector('.pic'),
+			ul=pic.querySelector('ul'),
+		    close= pic.querySelector('.close');
+		var btn= document.getElementById('btn_nav');
+		var btn1=btn.children[0];//球转换
+		var btn2=btn.children[1];
+		var prev= document.querySelector('.prev'),
+			next= document.querySelector('.next');
+		var lis= list_pic.children;
+		var zIndex=2;
+		var arr_position=[];
+		/*+++++++++++pic下生产6*6个li++++++++++++++*/
+		for(var i=0;i<36;i++){
+			var li = document.createElement('li');
+			ul.appendChild(li);
+		}
+		var li_pic = ul.querySelectorAll('li');
+		for(var i=0;i<arrImg.length;i++){
+			var li=document.createElement('li'),
+				img=document.createElement('img');
+			img.src=arrImg[i];
+			li.appendChild(img);
+			li.index=i;//给每个li 加一个自定义属性 
+			li.ondblclick= function(){
+				pic.style.opacity=0;
+				pic.style.display='block';
+				for(var j=0;j<li_pic.length;j++){
+					li_pic[j].nub=this.index;
+					li_pic[j].style.backgroundImage= 'url('+ this.children[0].src+')';
+					li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+					li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+				}
+				//问题： 想让li_pic 出现后 取消他们的margin值  但是没有实现
+				mTween(this,{rotateX:'360'},400,'linear',function(){
+					mTween(pic,{opacity: 100},1000,'linear',function(){
+						for(var j=0;j<li_pic.length;j++){
+							/*mTween(li_pic[j],{margin:0},400,'linear');*/
+							/*li_pic[j].style.margin=0;*/
+						}
+					});
+				});
+				mTween(prev,{left:0},400,'linear');
+				mTween(next,{left:1266},400,'linear');
+				
+			}
+			list_pic.appendChild(li);
+		}
+		close.onclick= function(){
+			mTween(pic,{opacity: 0},1000,'linear',function(){
+				pic.style.display='none';
+			});
+			mTween(prev,{left:-100},400,'linear');
+			mTween(next,{left:1366},400,'linear');
+		};
+		for(var i=0;i<lis.length;i++){
+			lis[i].style.left= lis[i].offsetLeft+'px';
+			lis[i].style.top= lis[i].offsetTop+'px';
+		}
+		var numb=0
+		for(var i=0;i<lis.length;i++){
+			lis[i].style.position='absolute';
+			fn(lis[i]);
+			next.onclick= function(){
+				pic.style.opacity='0';
+				mTween(pic,{opacity:100},800,'linear');
+				for(var j=0;j<li_pic.length;j++){
+					li_pic[j].style.backgroundImage= 'url('+ lis[li_pic[j].nub+1+numb].children[0].src+')';
+					li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+					li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+				}
+				numb++;
+				
+			}
+			prev.onclick= function(){
+				pic.style.opacity='0';
+				mTween(pic,{opacity:100},800,'linear');
+				for(var j=0;j<li_pic.length;j++){
+					li_pic[j].style.backgroundImage= 'url('+ lis[li_pic[j].nub-1+numb].children[0].src+')';
+					li_pic[j].style.backgroundPositionX=-li_pic[j].offsetLeft +'px' ;
+					li_pic[j].style.backgroundPositionY=-li_pic[j].offsetTop +'px' ;
+				}
+				numb--;
+				
+			}
+			
+		}
+		
+		/*+++++++++++++li添加移动事件 ++++++++++++*/
+		function fn(obj){
+			obj.addEventListener('mousedown', fnDown);
+			function fnDown(ev){
+				zIndex++;
+				obj.style.zIndex=zIndex;
+				var disX= ev.pageX - obj.offsetLeft,
+					disY= ev.pageY - obj.offsetTop;
+				document.addEventListener('mousemove',fnMove);
+				function fnMove(ev){
+					var l= ev.pageX - disX,
+						t= ev.pageY - disY;
+//设置边界  没有成功
+					if(l<-183){
+						l=-183;
+					}else if(l>document.documentElement.clientWidth-li.clientWidth){
+						l= document.documentElement.clientWidth-li.clientWidth;
+					}
+					if(t<0){
+						t=0;
+					}else if(t>document.documentElement.clientHeight-li.clientHeight){
+						t=document.documentElement.clientHeight-li.clientHeight;
+					}
+					obj.style.left= l+'px';
+					obj.style.top= t+'px';
+				}
+				document.addEventListener('mouseup',fnUp);
+				function fnUp(){
+
+					document.removeEventListener('mousemove',fnMove);
+					document.removeEventListener('mouseup',fnUp);
+				}
+				ev.preventDefault();
+			}
+		}	
+		for(var i=0;i<lis.length;i++){
+			arr_position.push([lis[i].style.left,lis[i].style.top]);
+		}
+		//随机排列 
+		btn2.onclick=randomPic;
+		function randomPic(){
+			if(pic.style.display=='block'){
+				mTween(pic,{opacity: 0},1000,'linear',function(){
+					pic.style.display='none';
+				});
+				mTween(prev,{left:-100},400,'linear');
+				mTween(next,{left:1366},400,'linear');
+				setTimeout(ran,800)
+			}else{
+				ran();
+			}
+			function ran(){
+				arr_position.sort(function(){//此函数将数组arr中每一项进行随机排序
+					return 0.5-Math.random();
+				});
+				for(var i=0;i<lis.length;i++){
+					lis[i].style.top=arr_position[i][1];
+					lis[i].style.left=arr_position[i][0];
+				}
+			}
+		}
+	
+	</script>
+	<script type="text/javascript">
+		var btn_nav= document.getElementById('btn_nav');
+		var pic_ball= document.getElementById('pic_ball');
+		var list_ball= pic_ball.querySelector('.list_ball');
+		var pic= document.querySelector('.pic'),
+			ul=pic.querySelector('ul');
+		var li_pic = ul.querySelectorAll('li');	
+		var lists=li_pic.children;
+		btn1=btn_nav.children[0];
+		btn2=btn_nav.children[1];
+		var arr=[1,3,5,7,9,11,9,7,5,3,1];
+		var n=0;
+		var theta=Math.PI/(arr.length-1);
+		var phi=0;
+		var r=300;
+		var flag= false;
+		btn1.onclick= function(){
+			flag=!flag;
+			list_pic.style.display='none';
+			pic_ball.style.display='block';
+			
+		}
+		
+		for(var i=0;i<arr.length;i++){
+			phi=Math.PI*2 /arr[i];
+			for(var j=0;j<arr[i];j++){
+				var li=document.createElement('li'),
+					img=document.createElement("img");
+				img.src=arrImg[n];
+				li.appendChild(img);
+				drawCircle(li,theta,phi,i,j);
+				list_ball.appendChild(li);
+				n++;
+				if(n==arr.length-1){
+					n=0;
+				}
+			}
+		}
+		function drawCircle(obj,theta,phi,i,j){
+			obj.circleX= r * Math.sin(theta*i)*Math.sin(phi*j)+200,
+			obj.circleY= -r * Math.cos(theta*i)+200,
+			obj.circleZ= r * Math.sin(theta*i)*Math.cos(phi*j);
+			obj.circlePhi= phi*j ;
+			obj.circleTheta= theta*(arr.length-i)-Math.PI/2;
+		}
+		var liss= list_ball.children;
+		for(var i=0;i<liss.length;i++){
+			liss[i].nubs=i;
+			liss[i].style.transform='translate3D('+liss[i].circleX+'px,'
+							+liss[i].circleY+'px,'+liss[i].circleZ+'px) rotateY('
+							+liss[i].circlePhi+'rad) rotateX('+liss[i].circleTheta+'rad)';
+		}
+		
+		for(var i=0;i<liss.length-1;i++){
+			liss[i].onclick= function(){
+				flag=!flag;
+				if(pic.style.display=='block'){
+					pic.style.display=='none';
+				}
+				pic_ball.style='none';
+				list_pic.style.display='block';
+				if(flag){
+					
+					clearInterval(timer);
+				}
+			}
+		}
+		var angleX=0;
+		var timer=0;
+		timer=setInterval(function(){
+			angleX++;
+			pic_ball.style.transform='rotateX('+30+'deg) rotateY('+angleX+'deg)'
+		},60);
+	</script>
+</html>
